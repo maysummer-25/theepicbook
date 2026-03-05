@@ -154,6 +154,8 @@ This project reinforced several important DevOps and cloud engineering practices
 
 # Original Project
 
+This deployment is based on the EpicBook application by Pravin Mishra
+
 Original repository:
 
 https://github.com/pravinmishraaws/theepicbook
@@ -184,3 +186,5 @@ Focused on:
 	•	Cloud Infrastructure
 	•	Automation
 	•	Production Systems
+
+This project is part of DevOps Micro-Internship Program by Pravin Mishra.
