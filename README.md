@@ -99,11 +99,13 @@ git clone https://github.com/maysummer-25/theepicbook.git
 ### Install Dependencies
 
 Frontend:
+
 cd frontend
 npm install
 npm run build
 
 Backend:
+
 cd backend
 npm install
 
@@ -114,10 +116,11 @@ The React production build is served by Nginx.
 Build files are copied to: /var/www/html
 Nginx then serves the static frontend from this directory.
 
-Run Backend with PM2
+### Run Backend with PM2
 pm2 start server.js
 PM2 ensures the backend service remains available and can automatically restart after failures or system reboots.
 
+```
 ---
 
 # Database Deployment
