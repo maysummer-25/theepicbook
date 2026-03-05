@@ -1,183 +1,183 @@
-# The EpicBook! - Project Documentation
+# EpicBook – Production-Style Deployment on Microsoft Azure
 
-## 📌 Introduction
+## Project Overview
 
-The **EpicBook!** project is an online bookstore application that allows users to browse a collection of books, add them to their cart, and proceed to checkout. This documentation provides an overview of the application's features, functionalities, and user flow.
+This repository documents the deployment of the **EpicBook full-stack application** on **Microsoft Azure** using a secure, segmented cloud architecture.
 
-## Documentation Structure
+The objective of this project was to simulate a **real-world production deployment** by implementing proper **network isolation, infrastructure design, and application hosting practices**, rather than simply running an application on a virtual machine.
 
-1️⃣ Home Page
-
-2️⃣ Menu Navigation
-
-3️⃣ Gallery Section
-
-4️⃣ Product Details
-
-5️⃣ Add to Cart
-
-6️⃣ Cart & Order Summary
-
-7️⃣ Checkout & Order Confirmation
-
-#### Note: [Installation, Configuration & Troubleshooting Guide](https://github.com/pravinmishraaws/theepicbook/blob/main/Installation%20%26%20Configuration%20Guide.md)
-
-## Application Architecture
-
-![Screenshot 2025-02-06 at 12 44 40](https://github.com/user-attachments/assets/50df00cb-ee85-4e9d-beb6-f63a862fbb2a)
-
+The deployment separates **frontend, backend, and database layers** while applying **least-privilege networking rules** inside an Azure Virtual Network.
 
 ---
 
-## **1️⃣ Home Page**
+# Architecture
 
-### **Overview**
-
-The **Home Page** serves as the primary interface where users can explore different books available for purchase. It features a visually appealing layout with a structured book listing.
-
-### **Features:**
-
-- Displays a collection of books with their **title, author, and price**.
-- Users can click on a book to view more **detailed information**.
-- "**Add to Cart**" button for each book.
-- A **navigation bar** for accessing different sections of the site.
-
-![Screenshot 2025-02-06 at 08 15 06](https://github.com/user-attachments/assets/4aa515e7-fb05-4f57-8dd6-722a4bdab8b2)
-
-![Screenshot 2025-02-06 at 08 15 26](https://github.com/user-attachments/assets/f915a1a5-c5a0-4249-beb1-b09ea58bef79)
-
----
-
-## **2️⃣ Menu Navigation**
-
-### **Overview**
-
-The **menu** provides quick access to different book categories, enhancing user experience by allowing filtering.
-
-### **Features:**
-
-- Users can select categories like:
-  - **NYT Bestsellers**
-  - **Classics**
-  - **Children’s Books**
-  - **Top 9**
-  - **Social Justice**
-  - **Fantasy**
-- Responsive design with an expandable/collapsible sidebar.
-
-![Screenshot 2025-02-06 at 08 11 14](https://github.com/user-attachments/assets/6dabd639-75ee-4bd1-83c0-5d04bc042996)
+The application follows a **three-tier architecture**, which is a common design pattern used in production systems.
+Internet
+│
+▼
+Public IP
+│
+▼
+Nginx (Reverse Proxy)
+│
+▼
+React Frontend
+│
+▼
+Node.js / Express API
+│
+▼
+Azure Database for MySQL (Private Subnet)
 
 ---
 
-## **3️⃣ Gallery Section**
+### Architecture Components
 
-### **Overview**
-
-The **Gallery** provides a different view of books, displaying them in a visually attractive **grid format**.
-
-### **Features:**
-
-- Showcases books in a **larger display** for better visibility.
-- Each book has a "**Browse Through**" option for more details.
-- Seamless user experience with an intuitive interface.
-
-![Screenshot 2025-02-06 at 08 13 29](https://github.com/user-attachments/assets/428fbf43-11fd-4b07-81cc-5dad60f2ca3e)
+| Layer | Technology | Purpose |
+|------|------|------|
+| Frontend | React.js | User interface |
+| Web Server | Nginx | Serves frontend and reverse proxies API requests |
+| Backend | Node.js / Express | Application logic and API |
+| Database | Azure MySQL Flexible Server | Managed relational database |
+| Infrastructure | Azure Virtual Network | Network segmentation |
+| Security | Network Security Groups | Traffic control |
 
 ---
 
-## **4️⃣ Product Details Page**
+# Azure Infrastructure Design
 
-### **Overview**
+The infrastructure was designed to follow **basic cloud security principles** such as **network segmentation and least-privilege access**.
 
-Clicking on a book opens the **Product Details Page**, where users can learn more before making a purchase.
-
-### **Features:**
-
-- **Book cover preview**
-- **Detailed description** of the book
-- **Genre, Publication Year, and Availability count**
-- **"Add to Cart" button** for easy purchase
-- **Modal pop-up design** to display details without leaving the current page
-
-![Screenshot 2025-02-06 at 08 19 14](https://github.com/user-attachments/assets/809d4c5c-1a51-454e-9e41-a55a3108d64a)
+### Virtual Network
+VNet: 10.0.0.0/16
 
 ---
 
-## **5️⃣ Add to Cart**
+### Subnet Segmentation
 
-### **Overview**
+| Subnet | CIDR | Purpose |
+|------|------|------|
+| Public Subnet | 10.0.1.0/24 | Hosts the application VM |
+| Private Subnet | 10.0.2.0/24 | Hosts Azure MySQL Database |
 
-Users can add books to their **shopping cart** for purchase.
+### Security Model
 
-### **Features:**
+Public Subnet NSG:
 
-- Clickable "**Add to Cart**" button for each book.
-- The **cart icon updates** in real time to reflect the number of items added.
-- Items remain in the cart until they are removed or purchased.
+- Allow HTTP (80)
+- Allow SSH (22)
 
-![Screenshot 2025-02-06 at 08 22 42](https://github.com/user-attachments/assets/eb58f2f2-dbd5-4b8e-9448-699fde7b505e)
+Private Subnet NSG:
 
----
+- Allow MySQL (3306) **only from the VM subnet**
 
-## **6️⃣ Cart & Order Summary**
-
-### **Overview**
-
-The **Cart Page** allows users to review selected books before proceeding to checkout.
-
-### **Features:**
-
-- Displays a **list of books** added to the cart with title, quantity, and price.
-- An **Order Summary box** shows the **total price**.
-- A **"Checkout" button** to proceed with the order.
-
-![Screenshot 2025-02-06 at 08 24 48](https://github.com/user-attachments/assets/6bddfc9e-97d1-4723-9aad-0f9cf067fc58)
+This ensures that the database **cannot be accessed directly from the internet**.
 
 ---
 
-## **7️⃣ Checkout & Order Confirmation**
+# Compute Layer
 
-### **Overview**
+| Component | Configuration |
+|------|------|
+| Virtual Machine | Ubuntu 22.04 LTS |
+| VM Size | Standard_B1s |
+| Process Manager | PM2 |
+| Web Server | Nginx |
 
-The **Checkout Process** finalizes the purchase and confirms the order placement.
-
-### **Features:**
-
-- **Final Order Review** before placing the order.
-- **Checkout Button** to confirm the order.
-- **Confirmation Message**: A modal pop-up appears with the message **"Your order is placed!"**
-- **Cart is cleared** once the order is placed.
-
-![Screenshot 2025-02-06 at 08 25 23](https://github.com/user-attachments/assets/751de6c6-213f-4fa5-87c2-e8d1d3f34829)
-
-## System Architecture
-
-### 🛠️ Key Components
-
-- **Frontend**: HTML, CSS, JavaScript for UI rendering
-- **Backend**: Node.js + Express.js handles API requests
-- **Database**: MySQL for storing books, orders, and user data
-- **Reverse Proxy**: Nginx to handle request forwarding
-
-**Cloud Services (Future)**:  AWS EC2, RDS, S3, CloudFront, Lambda
+The backend API runs using **PM2** to ensure the Node.js application stays running and automatically restarts if it crashes.
 
 ---
 
-## 🎯 **Conclusion**
+# Application Deployment
 
-The **EpicBook!** application provides a seamless user experience for discovering, selecting, and purchasing books online. With its well-structured navigation, visually appealing gallery, detailed product descriptions, and smooth checkout flow, it serves as a great example of an e-commerce bookstore.
+### Clone the Repository
+
+```bash
+git clone https://github.com/maysummer-25/theepicbook.git
+
+### Install Dependencies
+
+Frontend:
+cd frontend
+npm install
+npm run build
+
+Backend:
+cd backend
+npm install
+
+### Serve Frontend with Nginx
+
+The React production build is served by Nginx.
+
+Build files are copied to: /var/www/html
+Nginx then serves the static frontend from this directory.
+
+Run Backend with PM2
+pm2 start server.js
+PM2 ensures the backend service remains available and can automatically restart after failures or system reboots.
 
 ---
 
-### ** Next Steps**
+# Database Deployment
 
-If you are developer, you can consider developing below feature and send the pull request.
+The application uses Azure Database for MySQL – Flexible Server deployed inside the private subnet.
 
-- Deployment and hosting options.
-- Implementing a payment gateway.
-- Enhancing user authentication and order history.
+Security controls implemented:
+	•	Private VNet access
+	•	No public database endpoint
+	•	Access restricted to the application VM subnet
+	•	Secure connection through environment variables
 
+This ensures the database is not exposed to the public internet.
 
+---
 
+# Key DevOps Concepts Practiced
 
+This project reinforced several important DevOps and cloud engineering practices:
+	•	Virtual Network architecture
+	•	Subnet segmentation
+	•	Network Security Groups (NSGs)
+	•	Private database deployment
+	•	Reverse proxy configuration with Nginx
+	•	Node.js process management with PM2
+	•	Full-stack application deployment
+	•	Environment variable configuration
+	•	Secure cloud networking design
 
+---
+
+# Original Project
+
+Original repository:
+
+https://github.com/pravinmishraaws/theepicbook
+
+This repository focuses on deployment, infrastructure configuration, and operational setup rather than application development.
+
+---
+
+# Future Improvements
+
+Planned improvements for this project include:
+	•	Infrastructure as Code using Terraform
+	•	CI/CD pipeline using GitHub Actions
+	•	Containerization with Docker
+	•	Deployment with Azure Kubernetes Service (AKS)
+	•	Monitoring using Azure Monitor or Prometheus
+	•	Logging and observability improvements
+
+---
+
+# Author
+
+**Mmesoma Chukwumezie**
+
+DevOps Engineer (Learning Journey)
+
+Focused on:
+	•	Cloud Infrastructure
+	•	Automation
+	•	Production Systems
